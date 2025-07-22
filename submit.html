@@ -6,52 +6,51 @@
   <title>⛯ Submit a Beacon</title>
 </head>
 <body>
-  <h1>📡 Submit a Beacon</h1>
-  <p>Share your research, signal, or symbolic insight below. Beacons are stored in public ledger format.</p>
-  <form id="beacon-form">
-    <label for="title">Title:</label>
-    <input type="text" id="title" required /><br /><br />
+  <h1>⛯ Beacon Submission Tool</h1>
+  <p>
+    Use this form to submit symbolic research to the ⛯Lighthouse⛯ community.
+    This will generate a valid JSON header for your <strong>GitHub Discussion post</strong>.
+  </p>
 
-    <label for="author">Your Name / Codename:</label>
-    <input type="text" id="author" required /><br /><br />
+  <form id="submit-form">
+    <label for="title">Beacon Title:</label>
+    <input type="text" id="title" name="title" required />
 
-    <label for="symbol">Symbolic Tag (e.g., ⛯ Rabit-Studios – Brack Rosetta):</label>
-    <input type="text" id="symbol" required /><br /><br />
+    <label for="author">Your Lantern / Codename:</label>
+    <input type="text" id="author" name="author" required />
 
-    <label for="summary">Short Summary:</label><br />
-    <textarea id="summary" rows="4" cols="50" required></textarea><br /><br />
+    <label for="summary">One-sentence Summary:</label>
+    <input type="text" id="summary" name="summary" required />
 
-    <label for="link">Link to Beacon (Pastebin, Gist, Paste.ee):</label>
-    <input type="url" id="link" required /><br /><br />
+    <label for="content">Core Content or Link:</label>
+    <textarea id="content" name="content" rows="4" required></textarea>
 
-    <button type="submit">Emit Beacon</button>
+    <button type="submit">Generate Beacon JSON</button>
   </form>
 
-  <h2>📜 Your Beacon JSON Entry</h2>
-  <pre id="output"></pre>
+  <h2>📎 Your Beacon Submission Header</h2>
+  <p>Copy and paste this into your new post under the <strong>📚 Beacon Submissions</strong> category on GitHub Discussions.</p>
+  <pre><code id="output" style="background:#111;color:#0f0;padding:1em;border-radius:0.5em;"></code></pre>
 
   <script>
-    document.getElementById('beacon-form').addEventListener('submit', function (e) {
+    document.getElementById("submit-form").addEventListener("submit", function (e) {
       e.preventDefault();
-      const title = document.getElementById('title').value.trim();
-      const author = document.getElementById('author').value.trim();
-      const symbol = document.getElementById('symbol').value.trim();
-      const summary = document.getElementById('summary').value.trim();
-      const link = document.getElementById('link').value.trim();
+      const title = document.getElementById("title").value.trim();
+      const author = document.getElementById("author").value.trim();
+      const summary = document.getElementById("summary").value.trim();
+      const content = document.getElementById("content").value.trim();
 
-      const entry = {
-        title,
-        symbol,
-        author,
-        format: "Pastebin-style",
-        summary,
-        content: link,
-        timestamp: new Date().toISOString()
+      const beacon = {
+        beacon_title: title,
+        author: author,
+        summary: summary,
+        submission_date: new Date().toISOString(),
+        content: content,
+        format: "symbolic_submission::usppv5::beacon"
       };
 
-      document.getElementById('output').textContent = JSON.stringify(entry, null, 2);
-
-      alert("🕯️ Beacon generated! You can now copy/paste or PR this into the public beacon ledger.");
+      const output = document.getElementById("output");
+      output.textContent = JSON.stringify(beacon, null, 2);
     });
   </script>
 </body>
