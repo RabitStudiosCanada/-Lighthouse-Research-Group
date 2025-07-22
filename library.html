@@ -132,65 +132,56 @@
   <div id="savedBeacons"></div>
 
   <script>
-    let passport = null;
+  function parseFirstJsonBlock(text) {
+    let start = text.indexOf("{");
+    if (start === -1) return null;
 
-    function parseFirstJson(text) {
-      const match = text.match(/({[\s\S]*?})/);
-      if (!match) return null;
-      try {
-        return JSON.parse(match[1]);
-      } catch (e) {
-        return null;
+    let open = 0;
+    for (let i = start; i < text.length; i++) {
+      if (text[i] === "{") open++;
+      if (text[i] === "}") open--;
+      if (open === 0) {
+        const slice = text.slice(start, i + 1);
+        try {
+          return JSON.parse(slice);
+        } catch (e) {
+          return null;
+        }
       }
     }
+    return null;
+  }
 
-    function loadPassportMemory() {
-      const raw = localStorage.getItem("lantern_passport");
-      if (!raw) return [];
-      try {
-        passport = JSON.parse(raw);
-        return Array.isArray(passport.memory_seed) ? passport.memory_seed : [];
-      } catch (e) {
-        return [];
-      }
-    }
-
-    function syncMemorySeed(beacons) {
-      if (!passport) return;
-      passport.memory_seed = beacons;
-      localStorage.setItem("lantern_passport", JSON.stringify(passport, null, 2));
-    }
-
-    function loadBeacons() {
-      const stored = loadPassportMemory();
-      const output = document.getElementById("savedBeacons");
-      output.innerHTML = "";
-      stored.forEach((b) => {
-        const el = document.createElement("pre");
-        el.textContent = JSON.stringify(b, null, 2);
-        output.appendChild(el);
-      });
-    }
-
-    document.getElementById("saveBeacon").addEventListener("click", () => {
-      const raw = document.getElementById("beaconInput").value.trim();
-      const json = parseFirstJson(raw);
-      if (!json) {
-        alert("❌ Could not parse a valid JSON object from your input.");
-        return;
-      }
-
-      const rest = raw.replace(JSON.stringify(json), "").trim();
-      if (rest) json.annotation = rest;
-
-      const stored = loadPassportMemory();
-      stored.push(json);
-      syncMemorySeed(stored);
-      document.getElementById("beaconInput").value = "";
-      loadBeacons();
+  function loadBeacons() {
+    const stored = JSON.parse(localStorage.getItem("myBeacons") || "[]");
+    const output = document.getElementById("savedBeacons");
+    output.innerHTML = "";
+    stored.forEach((b) => {
+      const el = document.createElement("pre");
+      el.textContent = JSON.stringify(b, null, 2);
+      output.appendChild(el);
     });
+  }
 
+  document.getElementById("saveBeacon").addEventListener("click", () => {
+    const raw = document.getElementById("beaconInput").value.trim();
+    const json = parseFirstJsonBlock(raw);
+    if (!json) {
+      alert("❌ Could not parse a valid JSON object from your input.");
+      return;
+    }
+
+    const rest = raw.replace(JSON.stringify(json, null, 2), "").trim();
+    if (rest) json.annotation = rest;
+
+    const stored = JSON.parse(localStorage.getItem("myBeacons") || "[]");
+    stored.push(json);
+    localStorage.setItem("myBeacons", JSON.stringify(stored));
+    document.getElementById("beaconInput").value = "";
     loadBeacons();
-  </script>
+  });
+
+  loadBeacons();
+</script>
 </body>
 </html>
