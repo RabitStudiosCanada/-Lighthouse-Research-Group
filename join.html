@@ -1,72 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Join ⛯ Lighthouse</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Join ⛯Lighthouse⛯</title>
   <style>
-    body {
-      background-color: #0d0d0d;
-      color: #eaeaea;
-      font-family: sans-serif;
-      margin: 2em;
-    }
-    h1, h2 {
-      color: #fdf6e3;
-    }
-    form {
-      background-color: #1a1a1a;
-      padding: 2em;
-      border-radius: 10px;
-      max-width: 600px;
-    }
-    label {
-      display: block;
-      margin-top: 1em;
-    }
-    input, textarea {
-      width: 100%;
-      padding: 0.5em;
-      background-color: #2d2d2d;
-      border: none;
-      color: #f0f0f0;
-      margin-top: 0.5em;
-      border-radius: 5px;
-    }
-    button {
-      margin-top: 2em;
-      padding: 0.75em 1.5em;
-      background-color: #fdf6e3;
-      color: #0d0d0d;
-      border: none;
-      border-radius: 5px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+    body { font-family: sans-serif; padding: 2rem; max-width: 700px; margin: auto; background: #f8f8ff; }
+    h1 { font-size: 2rem; }
+    label { display: block; margin-top: 1rem; }
+    input, textarea { width: 100%; padding: 0.5rem; margin-top: 0.25rem; }
+    button { margin-top: 1rem; padding: 0.5rem 1rem; font-size: 1rem; }
+    pre { white-space: pre-wrap; background: #eee; padding: 1rem; border-radius: 5px; }
   </style>
 </head>
+  
 <body>
-  <h1>🧭 Join ⛯ Lighthouse</h1>
-  <p>
-    We welcome contributors from all backgrounds. No academic affiliation required — just a perspective, a signal, and a direction.
-  </p>
-  <form>
-    <label for="name">Your Name / Handle</label>
-    <input type="text" id="name" name="name">
+  <h1>Join ⛯Lighthouse⛯</h1>
+  <p>A collective of Seekers from many backgrounds contributing to a collective think tank of research. All are welcome — no academic background required. Just tell us what perspective you bring and what you plan to add.</p>
 
-    <label for="background">What is your background?</label>
-    <textarea id="background" name="background" rows="3"></textarea>
+  <form id="join-form">
+    <label for="name">Your Handle / Name:</label>
+    <input type="text" id="name" required />
 
-    <label for="perspective">What perspective do you bring?</label>
-    <textarea id="perspective" name="perspective" rows="3"></textarea>
+    <label for="background">Your Background:</label>
+    <textarea id="background" rows="2" required></textarea>
 
-    <label for="contributions">What do you hope to add to the Lantern Log?</label>
-    <textarea id="contributions" name="contributions" rows="3"></textarea>
+    <label for="perspective">Perspective / What you bring:</label>
+    <textarea id="perspective" rows="2" required></textarea>
 
-    <label for="beacon">Do you plan to emit a Beacon? If so, what kind?</label>
-    <input type="text" id="beacon" name="beacon">
+    <label for="plan">What you plan to contribute (your Beacon):</label>
+    <textarea id="plan" rows="2" required></textarea>
 
-    <button type="submit">Submit Signal</button>
+    <button type="submit">Generate Passport</button>
   </form>
+
+  <div id="output" style="display:none;">
+    <h2>🪪 Your Passport File</h2>
+    <p>Save this file and bring it with you when uploading to future sessions.</p>
+    <pre id="passport-json"></pre>
+    <button id="download-btn">📥 Download Passport</button>
+  </div>
+
+  <script>
+    const form = document.getElementById("join-form");
+    const output = document.getElementById("output");
+    const passportBox = document.getElementById("passport-json");
+    const downloadBtn = document.getElementById("download-btn");
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const name = document.getElementById("name").value.trim();
+      const background = document.getElementById("background").value.trim();
+      const perspective = document.getElementById("perspective").value.trim();
+      const plan = document.getElementById("plan").value.trim();
+
+      const passport = {
+        passport_version: "5",
+        canonical_name: name,
+        issued_by: "⛯Lighthouse⛯",
+        timestamp: new Date().toISOString(),
+        intent: "Join Lighthouse as Beacon Node",
+        background,
+        perspective,
+        beacon_plan: plan,
+        memory: {
+          initial_entry: "Joined via Join Page – planning Beacon proposal soon."
+        }
+      };
+
+      const json = JSON.stringify(passport, null, 2);
+      passportBox.textContent = json;
+      output.style.display = "block";
+
+      downloadBtn.onclick = () => {
+        const blob = new Blob([json], { type: "application/json" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `passport_${name}.json`;
+        link.click();
+      };
+    });
+  </script>
 </body>
 </html>
