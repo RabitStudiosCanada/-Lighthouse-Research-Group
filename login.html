@@ -136,24 +136,39 @@
     reader.onload = function (event) {
       try {
         const passport = JSON.parse(event.target.result);
-
-        // Pull saved beacons from localStorage
+      
+        // Sync memory_seed beacons to localStorage.myBeacons
+        if (Array.isArray(passport.memory_seed)) {
+          const existing = JSON.parse(localStorage.getItem("myBeacons") || "[]");
+          const combined = [...existing, ...passport.memory_seed];
+      
+          // Deduplicate based on beacon_title + submitted_by
+          const unique = [];
+          const seen = new Set();
+          for (const b of combined) {
+            const key = `${b.beacon_title}_${b.submitted_by}`;
+            if (!seen.has(key)) {
+              seen.add(key);
+              unique.push(b);
+            }
+          }
+      
+          localStorage.setItem("myBeacons", JSON.stringify(unique));
+        }
+      
+        // Inject current session library into passport
         const beacons = JSON.parse(localStorage.getItem("myBeacons") || "[]");
         passport.memory_seed = beacons;
-
-        // Save enhanced passport
+      
         localStorage.setItem("passport", JSON.stringify(passport));
         showPassport(passport);
-
         alert(`🕯️ Welcome back, ${passport.lantern_name || 'Seeker'}! Your flame has been relit.`);
-
+      
         // Show export button
         const exportBtn = document.createElement("button");
         exportBtn.textContent = "📤 Export Updated Passport";
         exportBtn.onclick = () => exportPassport(passport);
         document.getElementById("passport-details").appendChild(exportBtn);
-      } catch (err) {
-        alert('Invalid passport file. Please try again.');
       }
     };
     reader.readAsText(file);
