@@ -68,6 +68,24 @@
     button:hover {
       background-color: #555;
     }
+    
+    #savedBeaconsTitle {
+      font-size: 1.4em;
+      color: #00bfff;
+      margin-top: 2em;
+    }
+    
+    #savedBeacons pre {
+      background-color: #1a1a1a;
+      color: #f0f0f0;
+      padding: 1em;
+      margin: 1em 0;
+      border-radius: 6px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+      font-family: monospace;
+    }
   </style>
 </head>
 <body>
@@ -110,7 +128,7 @@
   <textarea id="beaconInput" placeholder="Paste your Beacon comment here..."></textarea>
   <button id="saveBeacon">Save to My Library</button>
 
-  <h2>🔎 Saved Beacons</h2>
+  <h2 id="savedBeaconsTitle">🔎 Saved Beacons</h2>
   <div id="savedBeacons"></div>
 
   <script>
