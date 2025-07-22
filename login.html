@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🛎️🔒 Lantern Login</title>
+  <link rel="stylesheet" href="styles/global.css" />
+</head>
+<body>
+  <header>
+    <h1>🛎️🔒 Lantern Login</h1>
+    <p>Upload your passport file to activate your Lantern identity.</p>
+  </header>
+
+  <main>
+    <form id="login-form">
+      <label for="passport">Passport File (.json):</label>
+      <input type="file" id="passport" name="passport" accept="application/json" required />
+      <button type="submit">Load Passport</button>
+    </form>
+
+    <section id="passport-details" style="display:none;">
+      <h2>🪔 Passport Details</h2>
+      <pre id="passport-output"></pre>
+    </section>
+  </main>
+
+  <script>
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const file = document.getElementById('passport').files[0];
+      if (!file) return alert('Please select a passport file.');
+
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        try {
+          const passport = JSON.parse(event.target.result);
+          document.getElementById('passport-output').textContent = JSON.stringify(passport, null, 2);
+          document.getElementById('passport-details').style.display = 'block';
+          alert(`🕯️ Welcome back, ${passport.lantern_name || 'Seeker'}! Your flame has been relit.`);
+        } catch (err) {
+          alert('Invalid passport file. Please try again.');
+        }
+      };
+      reader.readAsText(file);
+    });
+  </script>
+</body>
+</html>
