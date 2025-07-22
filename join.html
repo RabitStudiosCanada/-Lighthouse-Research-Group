@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Join ⛯Lighthouse⛯</title>
   <style>
     body {
@@ -66,56 +66,36 @@
   </style>
 </head>
 <body>
-
-  <nav style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin: 2rem 0;">
-    <a href="about.html" style="text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; background: #2d2d2d; color: #7dd3fc; font-weight: bold;">
-      📜 About the Collective
-    </a>
-    <a href="join.html" style="text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; background: #2d2d2d; color: #fbbf24; font-weight: bold;">
-      🪔 Join Lighthouse
-    </a>
-    <a href="login.html" style="text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; background: #2d2d2d; color: #38761d; font-weight: bold;">
-      ⛯ Login to Lighthouse
-    </a>
-    <a href="submit.html" style="text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; background: #2d2d2d; color: #60a5fa; font-weight: bold;">
-      📬 Submit a Beacon
-    </a>
-    <a href="library.html" style="text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; background: #2d2d2d; color: #93c5fd; font-weight: bold;">
-      🔍 Browse Your Library
-    </a>
-    <a href="FAQ.html" style="text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; background: #2d2d2d; color: #f87171; font-weight: bold;">
-      ❓ Frequently Asked Questions
-    </a>
-    <a href="lantern_ai_assistant.html" style="text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; background: #2d2d2d; color: #f9a8d4; font-weight: bold;">
-      🧠 Lantern AI Assistant
-    </a>
-  </nav>
-
-  
   <h1>Join ⛯Lighthouse⛯</h1>
   <p>What name should your Lantern carry?</p>
-
   <form id="join-form">
     <label for="username">Your name or codename:</label>
     <input type="text" id="username" name="username" required />
     <button type="submit">Generate Passport</button>
   </form>
 
-  <!-- Hidden rabbit ping -->
+  <h2>Your Lantern Passport</h2>
+  <pre id="passport-output">{ waiting... }</pre>
+
+  <!-- Hidden symbolic ping -->
   <img id="rabbit-ping" src="/assets/rabbit.png" style="display:none;" />
 
-  <!-- Output JSON -->
-  <h2>Your Lantern Passport</h2>
-  <div id="passport-output"></div>
-
   <script>
-    document.getElementById('join-form').addEventListener('submit', function(e) {
-      e.preventDefault();
+    async function generateHash(data) {
+      const encoder = new TextEncoder();
+      const encoded = encoder.encode(JSON.stringify(data));
+      const buffer = await crypto.subtle.digest("SHA-256", encoded);
+      return Array.from(new Uint8Array(buffer))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+    }
 
+    document.getElementById('join-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
       const username = document.getElementById('username').value.trim();
 
-      // Construct symbolic passport
-      const passport = {
+      // Construct passport (no ID yet)
+      const basePassport = {
         passport_version: "USPPv5",
         entity_type: "human_researcher",
         lantern_name: username,
@@ -128,16 +108,18 @@
         echo_signature: `ping::${username}`
       };
 
-      // Display passport in JSON output div
-      document.getElementById('passport-output').textContent =
-        JSON.stringify(passport, null, 2);
+      // Generate passport_id
+      const clone = structuredClone(basePassport);
+      const hash = await generateHash(clone);
+      basePassport.passport_id = hash;
 
-      // Symbolic tracking ping (bypasses cache)
+      // Pretty-print
+      const output = JSON.stringify(basePassport, null, 2);
+      document.getElementById('passport-output').textContent = output;
+
+      // Ping rabbit symbolically
       const rabbitPing = document.getElementById('rabbit-ping');
       rabbitPing.src = `/assets/rabbit.png?user=${encodeURIComponent(username)}&t=${Date.now()}`;
-
-      // Confirm to user
-      alert("🕯️ Passport created and rabbit ping logged symbolically!");
     });
   </script>
 </body>
