@@ -1,0 +1,75 @@
+/* style.css — Global styling for ⛯Lighthouse⛯ */
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #fefefe;
+  color: #111;
+  margin: 0;
+  padding: 1rem;
+  line-height: 1.6;
+}
+
+h1, h2, h3 {
+  color: #222;
+  font-weight: 600;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+  margin-top: 2rem;
+}
+
+input[type="text"], textarea {
+  font-size: 1rem;
+  padding: 0.5rem;
+  width: 100%;
+  max-width: 600px;
+  box-sizing: border-box;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+button {
+  font-size: 1rem;
+  padding: 0.6rem 1.2rem;
+  background-color: #f4f4f4;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+button:hover {
+  background-color: #e9e9e9;
+}
+
+#passport-output, #library-output {
+  background-color: #fafafa;
+  padding: 1rem;
+  border: 1px dashed #ccc;
+  font-family: monospace;
+  white-space: pre-wrap;
+  max-width: 800px;
+  overflow-x: auto;
+}
+
+nav {
+  background: #eee;
+  padding: 1rem;
+  margin-bottom: 2rem;
+}
+
+nav a {
+  margin-right: 1rem;
+  text-decoration: none;
+  color: #007acc;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
