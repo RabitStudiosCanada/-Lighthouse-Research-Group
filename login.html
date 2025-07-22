@@ -126,7 +126,7 @@
     URL.revokeObjectURL(url);
   }
 
-  // Load from uploaded file
+  // Load and enhance passport with local research memory
   document.getElementById('login-form').addEventListener('submit', function (e) {
     e.preventDefault();
     const file = document.getElementById('passport').files[0];
@@ -136,9 +136,22 @@
     reader.onload = function (event) {
       try {
         const passport = JSON.parse(event.target.result);
+
+        // Pull saved beacons from localStorage
+        const beacons = JSON.parse(localStorage.getItem("myBeacons") || "[]");
+        passport.memory_seed = beacons;
+
+        // Save enhanced passport
         localStorage.setItem("passport", JSON.stringify(passport));
         showPassport(passport);
+
         alert(`🕯️ Welcome back, ${passport.lantern_name || 'Seeker'}! Your flame has been relit.`);
+
+        // Show export button
+        const exportBtn = document.createElement("button");
+        exportBtn.textContent = "📤 Export Updated Passport";
+        exportBtn.onclick = () => exportPassport(passport);
+        document.getElementById("passport-details").appendChild(exportBtn);
       } catch (err) {
         alert('Invalid passport file. Please try again.');
       }
@@ -146,7 +159,7 @@
     reader.readAsText(file);
   });
 
-  // Add export button dynamically if logged in
+  // Auto-load stored passport (if present)
   window.addEventListener('DOMContentLoaded', () => {
     const stored = localStorage.getItem("passport");
     if (stored) {
