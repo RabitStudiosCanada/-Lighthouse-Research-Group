@@ -1,140 +1,115 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="="en">
 <head>
-  <meta charset="UTF-8">
-  <title>☼ Beacon Submission Tool</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Submit Beacon – ⛯ Lighthouse</title>
   <style>
     body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #0d0d0d;
-        color: #e0e0e0;
-        margin: 0;
-        padding: 2em;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f5f7fa;
+      margin: 0;
+      padding: 2rem;
+      color: #333;
     }
-    
     h1 {
-        font-size: 1.8em;
-        color: #66ccff;
+      text-align: center;
+      color: #222;
     }
-    
-    p {
-        font-size: 1em;
-        color: #cccccc;
+    label {
+      display: block;
+      margin: 1rem 0 0.3rem;
+      font-weight: bold;
     }
-    
-    input[type="text"],
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
     textarea {
-        width: 100%;
-        padding: 10px;
-        margin-top: 8px;
-        margin-bottom: 16px;
-        border: 1px solid #555;
-        background-color: #1a1a1a;
-        color: #f2f2f2;
-        border-radius: 4px;
-        box-sizing: border-box;
+      resize: vertical;
+      height: 120px;
     }
-    
-    textarea {
-        height: 120px;
-        resize: vertical;
+    button {
+      background-color: #3e4a61;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      margin-top: 1.5rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
     }
-    
-    button, input[type="button"], input[type="submit"] {
-        background-color: #333;
-        color: #fff;
-        padding: 10px 16px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
+    button:hover {
+      background-color: #2f3a4e;
     }
-    
-    button:hover, input[type="button"]:hover, input[type="submit"]:hover {
-        background-color: #555;
-    }
-    
-    section {
-        margin-bottom: 2em;
-        padding: 1em;
-        background-color: #111;
-        border-left: 4px solid #66ccff;
-        border-radius: 6px;
-    }
-    
-    h2 {
-        color: #66ccff;
-        margin-bottom: 0.5em;
+    #output {
+      background: #fff;
+      border: 1px solid #ddd;
+      padding: 1rem;
+      margin-top: 2rem;
+      white-space: pre-wrap;
+      font-family: monospace;
+      border-radius: 5px;
     }
   </style>
 </head>
 <body>
+  <h1>📬 Submit a Beacon</h1>
 
-  <nav style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin: 2rem 0;">
-    <a href="about.html" style="text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; background: #2d2d2d; color: #7dd3fc; font-weight: bold;">
-      📜 About the Collective
-    </a>
-    <a href="join.html" style="text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; background: #2d2d2d; color: #fbbf24; font-weight: bold;">
-      🪔 Join Lighthouse
-    </a>
-    <a href="login.html" style="text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; background: #2d2d2d; color: #38761d; font-weight: bold;">
-      ⛯ Login to Lighthouse
-    </a>
-    <a href="submit.html" style="text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; background: #2d2d2d; color: #60a5fa; font-weight: bold;">
-      📬 Submit a Beacon
-    </a>
-    <a href="library.html" style="text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; background: #2d2d2d; color: #93c5fd; font-weight: bold;">
-      🔍 Browse Your Library
-    </a>
-    <a href="FAQ.html" style="text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; background: #2d2d2d; color: #f87171; font-weight: bold;">
-      ❓ Frequently Asked Questions
-    </a>
-    <a href="lantern_ai_assistant.html" style="text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; background: #2d2d2d; color: #f9a8d4; font-weight: bold;">
-      🧠 Lantern AI Assistant
-    </a>
-  </nav>
-
-  
-  <h1>☼ Beacon Submission Tool</h1>
-  <p>Use this form to submit symbolic research to the ⛯Lighthouse⛯ community. This will generate a valid JSON header for your <strong>GitHub Discussion</strong> post.</p>
+  <label for="passport">Your Lantern Passport (Paste JSON):</label>
+  <textarea id="passport" placeholder='Paste your Lantern Passport JSON here...'></textarea>
 
   <label for="title">Beacon Title:</label>
-  <input type="text" id="title" placeholder="e.g. Glyphic Compression: Trial 3">
+  <input type="text" id="title" placeholder="e.g., Recursive Fire Loop v1.1"/>
 
-  <label for="name">Your Lantern / Codename:</label>
-  <input type="text" id="name" placeholder="e.g. Mart Bravro">
+  <label for="summary">Short Summary:</label>
+  <textarea id="summary" placeholder="1–2 sentence overview of your submission..."></textarea>
 
-  <label for="summary">One-sentence Summary:</label>
-  <input type="text" id="summary" placeholder="e.g. Exploring symbolic compression via glyph resonance.">
-
-  <label for="content">Core Content or Link:</label>
-  <textarea id="content" placeholder="Paste your core research text or a link to the full paper/work..."></textarea>
+  <label for="content">Submission Content:</label>
+  <textarea id="content" placeholder="Paste your Beacon content here... (code, insights, diagrams, links, etc.)"></textarea>
 
   <button onclick="generateJSON()">Generate Beacon JSON</button>
 
-  <div class="note">
-    <p>📎 <strong>Your Beacon Submission Header</strong></p>
-    <p>Copy and paste this into your new post under the  <a href="https://github.com/RabitStudiosCanada/-Lighthouse-Research-Group/discussions/1">📚 <strong>Beacon Submissions</strong></a> category on GitHub Discussions.</p>
-  </div>
-
-  <div id="output" class="result"></div>
+  <div id="output"></div>
 
   <script>
     function generateJSON() {
       const title = document.getElementById('title').value.trim();
-      const name = document.getElementById('name').value.trim();
       const summary = document.getElementById('summary').value.trim();
       const content = document.getElementById('content').value.trim();
+      const passportInput = document.getElementById('passport').value.trim();
 
-      if (!title || !name || !content) {
+      if (!title || !passportInput || !content) {
         document.getElementById('output').textContent = "⚠️ Please fill in all required fields.";
+        return;
+      }
+
+      let passport;
+      try {
+        passport = JSON.parse(passportInput);
+
+        const requiredKeys = ["passport_version", "entity_type", "lantern_name", "glyph", "issued_by", "issue_date", "intent", "echo_signature"];
+        for (const key of requiredKeys) {
+          if (!(key in passport)) {
+            throw new Error(`Missing required key: ${key}`);
+          }
+        }
+      } catch (err) {
+        document.getElementById('output').textContent = "⚠️ Invalid passport JSON: " + err.message;
         return;
       }
 
       const beacon = {
         beacon_title: title,
-        publisher: name,
+        publisher: passport.lantern_name,
         summary: summary,
-        content: content
+        content: content,
+        submitted_by: passport.echo_signature,
+        passport_version: passport.passport_version
       };
 
       document.getElementById('output').textContent = JSON.stringify(beacon, null, 2);
