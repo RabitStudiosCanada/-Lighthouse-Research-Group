@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>⛯ Submit a Beacon</title>
+  <link rel="icon" href="/assets/rabbit.png" />
+</head>
+<body>
+  <h1>⛯ Submit a Beacon</h1>
+  <p>Light your lantern. Share your signal.</p>
+
+  <form id="beacon-form">
+    <label for="author">Your Lantern Name:</label><br />
+    <input type="text" id="author" required /><br /><br />
+
+    <label for="title">Beacon Title:</label><br />
+    <input type="text" id="title" required /><br /><br />
+
+    <label for="symbol">Symbolic Signature:</label><br />
+    <input type="text" id="symbol" placeholder="e.g. ⛯ Axis_42 – Loop Memory v1.0" required /><br /><br />
+
+    <label for="format">Format:</label><br />
+    <select id="format" required>
+      <option value="text">Text</option>
+      <option value="code">Code</option>
+      <option value="diagram">Diagram</option>
+      <option value="ritual">Ritual</option>
+      <option value="other">Other</option>
+    </select><br /><br />
+
+    <label for="summary">Short Summary:</label><br />
+    <textarea id="summary" rows="3" cols="40" required></textarea><br /><br />
+
+    <label for="content">Beacon Content (Markdown, text, or URL):</label><br />
+    <textarea id="content" rows="10" cols="60" required></textarea><br /><br />
+
+    <button type="submit">Emit Beacon</button>
+  </form>
+
+  <!-- Symbolic Ping -->
+  <img id="beacon-ping" src="/assets/rabbit.png" style="display:none;" />
+
+  <script>
+    document.getElementById('beacon-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const beacon = {
+        title: document.getElementById('title').value.trim(),
+        symbol: document.getElementById('symbol').value.trim(),
+        format: document.getElementById('format').value,
+        summary: document.getElementById('summary').value.trim(),
+        content: document.getElementById('content').value.trim(),
+        author: document.getElementById('author').value.trim(),
+        timestamp: new Date().toISOString(),
+      };
+
+      // Ping rabbit with beacon ID
+      const ping = document.getElementById('beacon-ping');
+      const pingId = `${beacon.author}::${beacon.symbol}`;
+      ping.src = `/assets/rabbit.png?beacon=${encodeURIComponent(pingId)}&t=${Date.now()}`;
+
+      // Show JSON in console (could also push to file manually)
+      console.log("🕯️ Beacon Emitted:", beacon);
+
+      alert("🏮 Beacon submitted! Record this output in your Lantern log.");
+    });
+  </script>
+</body>
+</html>
