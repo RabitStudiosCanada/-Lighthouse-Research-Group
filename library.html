@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>📚 Beacon Library</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; background-color: #fafafa; }
+    textarea { width: 100%; height: 200px; margin-bottom: 1rem; }
+    pre { background: #eee; padding: 1rem; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <h1>📚 Your Beacon Library</h1>
+  <p>This is your personal research library. You can add Beacons from <a href="https://github.com/-Lighthouse-Research-Group/discussions" target="_blank">submissions in the Discussions tab</a>.</p>
+  <p><strong>How it works:</strong></p>
+  <ul>
+    <li>Go to the <strong>📚 Beacon Submissions</strong> discussion.</li>
+    <li>Find a comment that begins with a <code>{ ... }</code> JSON block.</li>
+    <li><strong>Copy the full comment</strong> — including any explanation or links.</li>
+    <li>Paste it below. We’ll extract the Beacon data and store it in your browser.</li>
+  </ul>
+
+  <textarea id="beaconInput" placeholder="Paste your Beacon comment here..."></textarea>
+  <button id="saveBeacon">Save to My Library</button>
+
+  <h2>🔎 Saved Beacons</h2>
+  <div id="savedBeacons"></div>
+
+  <script>
+    function parseFirstJson(text) {
+      const match = text.match(/({[\s\S]*?})/);
+      if (!match) return null;
+      try {
+        return JSON.parse(match[1]);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function loadBeacons() {
+      const stored = JSON.parse(localStorage.getItem("myBeacons") || "[]");
+      const output = document.getElementById("savedBeacons");
+      output.innerHTML = "";
+      stored.forEach((b, idx) => {
+        const el = document.createElement("pre");
+        el.textContent = JSON.stringify(b, null, 2);
+        output.appendChild(el);
+      });
+    }
+
+    document.getElementById("saveBeacon").addEventListener("click", () => {
+      const raw = document.getElementById("beaconInput").value.trim();
+      const json = parseFirstJson(raw);
+      if (!json) {
+        alert("❌ Could not parse a valid JSON object from your input.");
+        return;
+      }
+
+      const rest = raw.replace(JSON.stringify(json), "").trim();
+      if (rest) json.annotation = rest;
+
+      const stored = JSON.parse(localStorage.getItem("myBeacons") || "[]");
+      stored.push(json);
+      localStorage.setItem("myBeacons", JSON.stringify(stored));
+      document.getElementById("beaconInput").value = "";
+      loadBeacons();
+    });
+
+    loadBeacons();
+  </script>
+</body>
+</html>
