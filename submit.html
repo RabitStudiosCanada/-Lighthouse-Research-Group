@@ -6,62 +6,54 @@
   <title>Submit Beacon – ⛯ Lighthouse</title>
   <style>
     body {
-      background-color: #111;
-      color: #f0f0f0;
       font-family: 'Segoe UI', sans-serif;
-      padding: 2rem;
+      background-color: #f5f7fa;
       margin: 0;
+      padding: 2rem;
+      color: #333;
     }
-    
-    nav {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      justify-content: center;
-      background-color: #1f1f1f;
-      padding: 1rem 0;
-      border-bottom: 1px solid #444;
+    h1 {
+      text-align: center;
+      color: #222;
     }
-    
-    nav a {
-      text-decoration: none;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      background: #2d2d2d;
-      color: #7dd3fc;
+    label {
+      display: block;
+      margin: 1rem 0 0.3rem;
       font-weight: bold;
-      transition: background 0.3s;
     }
-    
-    nav a:hover {
-      background: #3b3b3b;
-      color: #fff;
-    }
-    
-    h1, h2, h3 {
-      color: #7dd3fc;
-    }
-    
-    input, textarea, button {
-      margin: 0.5rem 0;
-      padding: 0.5rem;
-      font-size: 1rem;
+    input[type="text"], textarea {
       width: 100%;
-      max-width: 600px;
+      padding: 0.75rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
       border-radius: 5px;
-      border: 1px solid #444;
-      background-color: #222;
-      color: #fff;
+      box-sizing: border-box;
     }
-    
+    textarea {
+      resize: vertical;
+      height: 120px;
+    }
     button {
-      background-color: #333;
+      background-color: #3e4a61;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      margin-top: 1.5rem;
       border: none;
+      border-radius: 5px;
       cursor: pointer;
+      font-size: 1rem;
     }
-    
     button:hover {
-      background-color: #555;
+      background-color: #2f3a4e;
+    }
+    #output {
+      background: #fff;
+      border: 1px solid #ddd;
+      padding: 1rem;
+      margin-top: 2rem;
+      white-space: pre-wrap;
+      font-family: monospace;
+      border-radius: 5px;
     }
   </style>
 </head>
