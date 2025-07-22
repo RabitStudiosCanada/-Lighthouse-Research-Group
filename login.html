@@ -111,24 +111,54 @@
   </main>
 
   <script>
-    document.getElementById('login-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const file = document.getElementById('passport').files[0];
-      if (!file) return alert('Please select a passport file.');
+  function showPassport(passport) {
+    document.getElementById('passport-output').textContent = JSON.stringify(passport, null, 2);
+    document.getElementById('passport-details').style.display = 'block';
+  }
 
-      const reader = new FileReader();
-      reader.onload = function(event) {
-        try {
-          const passport = JSON.parse(event.target.result);
-          document.getElementById('passport-output').textContent = JSON.stringify(passport, null, 2);
-          document.getElementById('passport-details').style.display = 'block';
-          alert(`🕯️ Welcome back, ${passport.lantern_name || 'Seeker'}! Your flame has been relit.`);
-        } catch (err) {
-          alert('Invalid passport file. Please try again.');
-        }
-      };
-      reader.readAsText(file);
-    });
-  </script>
+  function exportPassport(passport) {
+    const blob = new Blob([JSON.stringify(passport, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${passport.lantern_name || "lantern_passport"}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // Load from uploaded file
+  document.getElementById('login-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const file = document.getElementById('passport').files[0];
+    if (!file) return alert('Please select a passport file.');
+
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      try {
+        const passport = JSON.parse(event.target.result);
+        localStorage.setItem("passport", JSON.stringify(passport));
+        showPassport(passport);
+        alert(`🕯️ Welcome back, ${passport.lantern_name || 'Seeker'}! Your flame has been relit.`);
+      } catch (err) {
+        alert('Invalid passport file. Please try again.');
+      }
+    };
+    reader.readAsText(file);
+  });
+
+  // Add export button dynamically if logged in
+  window.addEventListener('DOMContentLoaded', () => {
+    const stored = localStorage.getItem("passport");
+    if (stored) {
+      const passport = JSON.parse(stored);
+      showPassport(passport);
+
+      const exportBtn = document.createElement("button");
+      exportBtn.textContent = "📤 Export Updated Passport";
+      exportBtn.onclick = () => exportPassport(passport);
+      document.getElementById("passport-details").appendChild(exportBtn);
+    }
+  });
+</script>
 </body>
 </html>
