@@ -1,124 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>⛯ Submit a Beacon</title>
+  <meta charset="UTF-8">
+  <title>☼ Beacon Submission Tool</title>
   <style>
     body {
       font-family: system-ui, sans-serif;
-      max-width: 800px;
-      margin: 3rem auto;
+      max-width: 900px;
+      margin: 2rem auto;
       padding: 1rem;
-      line-height: 1.7;
-      background-color: #1e1e1e;
-      color: #007acc;
+      background: #fefefe;
+      color: #222;
     }
-  
-    h1, h2, h3 {
-      color: #111;
-      margin-top: 2rem;
+    h1 {
+      font-size: 1.6rem;
+      margin-bottom: 0.5rem;
     }
-  
-    code {
-      background: #f0f0f0;
-      padding: 0.2rem 0.4rem;
-      border-radius: 4px;
-      font-family: monospace;
+    label {
+      display: block;
+      font-weight: bold;
+      margin-top: 1rem;
     }
-  
-    a {
-      color: #0077cc;
-      text-decoration: none;
-    }
-  
-    a:hover {
-      text-decoration: underline;
-    }
-  
-    ul, ol {
-      padding-left: 1.5rem;
-    }
-  
-    hr {
-      border: none;
-      border-top: 1px solid #ccc;
-      margin: 2rem 0;
-    }
-  
-    pre {
-      background: #f4f4f4;
-      padding: 1rem;
-      overflow-x: auto;
-      border-radius: 6px;
-    }
-  
-    button, input[type="submit"] {
-      padding: 0.6rem 1rem;
-      font-size: 1rem;
-      background: #333;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-  
-    input[type="text"], textarea {
+    input[type="text"],
+    textarea {
       width: 100%;
       padding: 0.6rem;
-      margin: 0.5rem 0 1rem;
+      font-size: 1rem;
       border: 1px solid #ccc;
       border-radius: 4px;
+      margin-top: 0.2rem;
+    }
+    textarea {
+      resize: vertical;
+      height: 100px;
+    }
+    button {
+      margin-top: 1rem;
+      padding: 0.6rem 1rem;
+      font-size: 1rem;
+      background-color: #333;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .result {
+      background: #1e1e1e;
+      color: #0f0;
+      padding: 1rem;
+      border-radius: 6px;
+      margin-top: 1rem;
+      font-family: monospace;
+      white-space: pre-wrap;
+    }
+    .note {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: #444;
     }
   </style>
 </head>
 <body>
-  <h1>⛯ Beacon Submission Tool</h1>
-  <p>
-    Use this form to submit symbolic research to the ⛯Lighthouse⛯ community.
-    This will generate a valid JSON header for your <strong>GitHub Discussion post</strong>.
-  </p>
+  <h1>☼ Beacon Submission Tool</h1>
+  <p>Use this form to submit symbolic research to the ⛯Lighthouse⛯ community. This will generate a valid JSON header for your <strong>GitHub Discussion</strong> post.</p>
 
-  <form id="submit-form">
-    <label for="title">Beacon Title:</label>
-    <input type="text" id="title" name="title" required />
+  <label for="title">Beacon Title:</label>
+  <input type="text" id="title" placeholder="e.g. Glyphic Compression: Trial 3">
 
-    <label for="author">Your Lantern / Codename:</label>
-    <input type="text" id="author" name="author" required />
+  <label for="name">Your Lantern / Codename:</label>
+  <input type="text" id="name" placeholder="e.g. Mart Bravro">
 
-    <label for="summary">One-sentence Summary:</label>
-    <input type="text" id="summary" name="summary" required />
+  <label for="summary">One-sentence Summary:</label>
+  <input type="text" id="summary" placeholder="e.g. Exploring symbolic compression via glyph resonance.">
 
-    <label for="content">Core Content or Link:</label>
-    <textarea id="content" name="content" rows="4" required></textarea>
+  <label for="content">Core Content or Link:</label>
+  <textarea id="content" placeholder="Paste your core research text or a link to the full paper/work..."></textarea>
 
-    <button type="submit">Generate Beacon JSON</button>
-  </form>
+  <button onclick="generateJSON()">Generate Beacon JSON</button>
 
-  <h2>📎 Your Beacon Submission Header</h2>
-  <p>Copy and paste this into your new post under the <strong>📚 Beacon Submissions</strong> category on GitHub Discussions.</p>
-  <pre><code id="output" style="background:#111;color:#0f0;padding:1em;border-radius:0.5em;"></code></pre>
+  <div class="note">
+    <p>📎 <strong>Your Beacon Submission Header</strong></p>
+    <p>Copy and paste this into your new post under the 📚 <strong>Beacon Submissions</strong> category on GitHub Discussions.</p>
+  </div>
+
+  <div id="output" class="result"></div>
 
   <script>
-    document.getElementById("submit-form").addEventListener("submit", function (e) {
-      e.preventDefault();
-      const title = document.getElementById("title").value.trim();
-      const author = document.getElementById("author").value.trim();
-      const summary = document.getElementById("summary").value.trim();
-      const content = document.getElementById("content").value.trim();
+    function generateJSON() {
+      const title = document.getElementById('title').value.trim();
+      const name = document.getElementById('name').value.trim();
+      const summary = document.getElementById('summary').value.trim();
+      const content = document.getElementById('content').value.trim();
+
+      if (!title || !name || !content) {
+        document.getElementById('output').textContent = "⚠️ Please fill in all required fields.";
+        return;
+      }
 
       const beacon = {
         beacon_title: title,
-        author: author,
+        publisher: name,
         summary: summary,
-        submission_date: new Date().toISOString(),
-        content: content,
-        format: "symbolic_submission::usppv5::beacon"
+        content: content
       };
 
-      const output = document.getElementById("output");
-      output.textContent = JSON.stringify(beacon, null, 2);
-    });
+      document.getElementById('output').textContent = JSON.stringify(beacon, null, 2);
+    }
   </script>
 </body>
 </html>
