@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Join ⛯ Lighthouse</title>
+  <style>
+    body {
+      background-color: #0d0d0d;
+      color: #eaeaea;
+      font-family: sans-serif;
+      margin: 2em;
+    }
+    h1, h2 {
+      color: #fdf6e3;
+    }
+    form {
+      background-color: #1a1a1a;
+      padding: 2em;
+      border-radius: 10px;
+      max-width: 600px;
+    }
+    label {
+      display: block;
+      margin-top: 1em;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 0.5em;
+      background-color: #2d2d2d;
+      border: none;
+      color: #f0f0f0;
+      margin-top: 0.5em;
+      border-radius: 5px;
+    }
+    button {
+      margin-top: 2em;
+      padding: 0.75em 1.5em;
+      background-color: #fdf6e3;
+      color: #0d0d0d;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧭 Join ⛯ Lighthouse</h1>
+  <p>
+    We welcome contributors from all backgrounds. No academic affiliation required — just a perspective, a signal, and a direction.
+  </p>
+  <form>
+    <label for="name">Your Name / Handle</label>
+    <input type="text" id="name" name="name">
+
+    <label for="background">What is your background?</label>
+    <textarea id="background" name="background" rows="3"></textarea>
+
+    <label for="perspective">What perspective do you bring?</label>
+    <textarea id="perspective" name="perspective" rows="3"></textarea>
+
+    <label for="contributions">What do you hope to add to the Lantern Log?</label>
+    <textarea id="contributions" name="contributions" rows="3"></textarea>
+
+    <label for="beacon">Do you plan to emit a Beacon? If so, what kind?</label>
+    <input type="text" id="beacon" name="beacon">
+
+    <button type="submit">Submit Signal</button>
+  </form>
+</body>
+</html>
