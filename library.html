@@ -115,10 +115,20 @@
 
   <script>
     function parseFirstJson(text) {
-      const match = text.match(/({[\s\S]*?})/);
-      if (!match) return null;
+      // Normalize backticks, strip markdown code fences, clean indentation
+      const cleaned = text
+        .replace(/```(json)?/g, '')          // remove ``` or ```json
+        .trim()
+        .split('\n')
+        .map(line => line.replace(/^\s{2,}/, ''))  // remove extra indent (2+ spaces)
+        .join('\n');
+    
       try {
-        return JSON.parse(match[1]);
+        const firstBrace = cleaned.indexOf('{');
+        const lastBrace = cleaned.lastIndexOf('}');
+        if (firstBrace === -1 || lastBrace === -1) return null;
+        const maybeJson = cleaned.slice(firstBrace, lastBrace + 1);
+        return JSON.parse(maybeJson);
       } catch (e) {
         return null;
       }
