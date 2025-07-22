@@ -132,31 +132,40 @@
   <div id="savedBeacons"></div>
 
   <script>
+    let passport = null;
+
     function parseFirstJson(text) {
-      // Normalize backticks, strip markdown code fences, clean indentation
-      const cleaned = text
-        .replace(/```(json)?/g, '')          // remove ``` or ```json
-        .trim()
-        .split('\n')
-        .map(line => line.replace(/^\s{2,}/, ''))  // remove extra indent (2+ spaces)
-        .join('\n');
-    
+      const match = text.match(/({[\s\S]*?})/);
+      if (!match) return null;
       try {
-        const firstBrace = cleaned.indexOf('{');
-        const lastBrace = cleaned.lastIndexOf('}');
-        if (firstBrace === -1 || lastBrace === -1) return null;
-        const maybeJson = cleaned.slice(firstBrace, lastBrace + 1);
-        return JSON.parse(maybeJson);
+        return JSON.parse(match[1]);
       } catch (e) {
         return null;
       }
     }
 
+    function loadPassportMemory() {
+      const raw = localStorage.getItem("lantern_passport");
+      if (!raw) return [];
+      try {
+        passport = JSON.parse(raw);
+        return Array.isArray(passport.memory_seed) ? passport.memory_seed : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function syncMemorySeed(beacons) {
+      if (!passport) return;
+      passport.memory_seed = beacons;
+      localStorage.setItem("lantern_passport", JSON.stringify(passport, null, 2));
+    }
+
     function loadBeacons() {
-      const stored = JSON.parse(localStorage.getItem("myBeacons") || "[]");
+      const stored = loadPassportMemory();
       const output = document.getElementById("savedBeacons");
       output.innerHTML = "";
-      stored.forEach((b, idx) => {
+      stored.forEach((b) => {
         const el = document.createElement("pre");
         el.textContent = JSON.stringify(b, null, 2);
         output.appendChild(el);
@@ -174,9 +183,9 @@
       const rest = raw.replace(JSON.stringify(json), "").trim();
       if (rest) json.annotation = rest;
 
-      const stored = JSON.parse(localStorage.getItem("myBeacons") || "[]");
+      const stored = loadPassportMemory();
       stored.push(json);
-      localStorage.setItem("myBeacons", JSON.stringify(stored));
+      syncMemorySeed(stored);
       document.getElementById("beaconInput").value = "";
       loadBeacons();
     });
