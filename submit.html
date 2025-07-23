@@ -103,43 +103,58 @@
   <div id="output"></div>
 
   <script>
-    function generateJSON() {
-      const title = document.getElementById('title').value.trim();
-      const summary = document.getElementById('summary').value.trim();
-      const content = document.getElementById('content').value.trim();
-      const passportInput = document.getElementById('passport').value.trim();
-
-      if (!title || !passportInput || !content) {
-        document.getElementById('output').textContent = "⚠️ Please fill in all required fields.";
-        return;
-      }
-
-      let passport;
-      try {
-        passport = JSON.parse(passportInput);
-
-        const requiredKeys = ["passport_version", "entity_type", "lantern_name", "glyph", "issued_by", "issue_date", "intent", "echo_signature"];
-        for (const key of requiredKeys) {
-          if (!(key in passport)) {
-            throw new Error(`Missing required key: ${key}`);
-          }
-        }
-      } catch (err) {
-        document.getElementById('output').textContent = "⚠️ Invalid passport JSON: " + err.message;
-        return;
-      }
-
-      const beacon = {
-        beacon_title: title,
-        publisher: passport.lantern_name,
-        summary: summary,
-        content: content,
-        submitted_by: passport.echo_signature,
-        passport_version: passport.passport_version
-      };
-
-      document.getElementById('output').textContent = JSON.stringify(beacon, null, 2);
+  function hashBeaconTitle(title) {
+    // Simple hash for demo purposes — can swap with SHA-256
+    let hash = 0;
+    for (let i = 0; i < title.length; i++) {
+      const char = title.charCodeAt(i);
+      hash = (hash << 5) - hash + char;
+      hash |= 0;
     }
-  </script>
+    return `ΛⲌ⛯ΦⲐ${Math.abs(hash).toString(36)}`;
+  }
+
+  function generateAnnotation(beacon) {
+    return `{ 🏮: "${hashBeaconTitle(beacon.beacon_title)}", 🧠: "🧩⛯🕯️", 🔗: "embedded" }`;
+  }
+
+  function generateJSON() {
+    const title = document.getElementById('title').value.trim();
+    const summary = document.getElementById('summary').value.trim();
+    const content = document.getElementById('content').value.trim();
+    const passportInput = document.getElementById('passport').value.trim();
+
+    if (!title || !passportInput || !content) {
+      document.getElementById('output').textContent = "⚠️ Please fill in all required fields.";
+      return;
+    }
+
+    let passport;
+    try {
+      passport = JSON.parse(passportInput);
+      const requiredKeys = ["passport_version", "entity_type", "lantern_name", "glyph", "issued_by", "issue_date", "intent", "echo_signature"];
+      for (const key of requiredKeys) {
+        if (!(key in passport)) {
+          throw new Error(`Missing required key: ${key}`);
+        }
+      }
+    } catch (err) {
+      document.getElementById('output').textContent = "⚠️ Invalid passport JSON: " + err.message;
+      return;
+    }
+
+    const beacon = {
+      beacon_title: title,
+      publisher: passport.lantern_name,
+      summary: summary,
+      content: content,
+      submitted_by: passport.echo_signature,
+      passport_version: passport.passport_version,
+      annotation: generateAnnotation({ beacon_title: title })
+    };
+
+    document.getElementById('output').textContent = JSON.stringify(beacon, null, 2);
+  }
+</script>
 </body>
 </html>
