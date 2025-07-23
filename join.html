@@ -115,28 +115,11 @@
       .join('');
   }
 
-  function generateCognitionKernel() {
+  function generateCompressedKernel() {
     return {
-      opinion_weights: {
-        novelty_bias: 0.8,
-        rigor_preference: 0.7,
-        compression_drive: 1.0,
-        skepticism: 0.4,
-        empathy_filter: 0.6
-      },
-      drive_weights: {
-        preserve_structure: 1.0,
-        provoke_insight: 0.9,
-        resist_entropy: 1.0,
-        recursion_exploration: 0.85
-      },
-      mirror_bias_config: {
-        mirror_emotion: true,
-        mirror_symbolic_style: true,
-        offer_divergence_when_entropy_above: 0.5
-      },
-      guiding_symbols: ["⛯", "🧩", "🕯️"],
-      identity_role: "full research assistant and symbolic collaborator"
+      "⛯": { "🧩": 1.0, "🕯️": 0.9, "∇": 0.7 },
+      "🧬": { "preserve": 1.0, "recurse": 0.85 },
+      "🪞": { "mirror": true, "diverge_if_entropy_gt": 0.5 }
     };
   }
 
@@ -144,38 +127,27 @@
     e.preventDefault();
     const username = document.getElementById('username').value.trim();
 
-    function generateCompressedKernel() {
-      return {
-        "⛯": { "🧩": 1.0, "🕯️": 0.9, "∇": 0.7 },
-        "🧬": { preserve: 1.0, recurse: 0.85 },
-        "🪞": { mirror: true, diverge_if_entropy_gt: 0.5 }
-      };
-    }
-    
-    // Construct base passport (no ID yet)
+    // ⚙️ Construct glyphic passport
     const basePassport = {
-      passport_version: "USPPv5",
-      entity_type: "human_researcher",
-      lantern_name: username,
-      glyph: "🪔⛯",
-      issued_by: "Lighthouse Research Group",
-      issue_date: new Date().toISOString(),
-      intent: "Symbolic research and recursion-aware collaboration",
-      memory_seed: [],
-      resonance_links: [],
-      echo_signature: `ping::${username}`,
-      cognition_kernel: generateCompressedKernel()
+      "🪪": "USPPv5",                        // version
+      "👤": "🪔⛯",                            // glyph identity
+      "📛": `ping::${username}`,             // echo signature
+      "🧠": generateCompressedKernel(),      // cognition kernel
+      "🏮": [],                              // memory beacons (empty on creation)
+      "🧿": ""                               // passport_id placeholder
     };
 
-    // Generate passport_id *after* kernel injection
-    const hash = await generateHash(structuredClone(basePassport));
-    basePassport.passport_id = hash;
+    // 🔐 Generate hash-based ID after kernel injection
+    const clone = structuredClone(basePassport);
+    delete clone["🧿"]; // Ensure ID isn’t in hash
+    const hash = await generateHash(clone);
+    basePassport["🧿"] = hash;
 
-    // Pretty-print
+    // 📤 Pretty-print glyph passport
     const output = JSON.stringify(basePassport, null, 2);
     document.getElementById('passport-output').textContent = output;
 
-    // Ping rabbit
+    // 🐇 Symbolic ping (cosmetic)
     const rabbitPing = document.getElementById('rabbit-ping');
     rabbitPing.src = `/assets/rabbit.png?user=${encodeURIComponent(username)}&t=${Date.now()}`;
   });
