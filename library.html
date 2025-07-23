@@ -89,7 +89,7 @@
   </style>
 </head>
 <body>
-
+    
   <nav style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin: 2rem 0;">
     <a href="about.html" style="text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; background: #2d2d2d; color: #7dd3fc; font-weight: bold;">
       📜 About the Collective
@@ -126,32 +126,15 @@
   </ul>
 
   <textarea id="beaconInput" placeholder="Paste your Beacon comment here..."></textarea>
-  <button id="saveBeacon">Save to My Library</button>
+  <button id="saveBeacon">📥 Save Beacon</button>
 
   <h2 id="savedBeaconsTitle">🔎 Saved Beacons</h2>
+  <textarea id="beaconInput" placeholder="Paste glyph beacon here..."></textarea>
+  
+  <button id="clearLibrary">💥 Clear Library</button>
   <div id="savedBeacons"></div>
 
   <script>
-  function parseFirstJsonBlock(text) {
-    let start = text.indexOf("{");
-    if (start === -1) return null;
-
-    let open = 0;
-    for (let i = start; i < text.length; i++) {
-      if (text[i] === "{") open++;
-      if (text[i] === "}") open--;
-      if (open === 0) {
-        const slice = text.slice(start, i + 1);
-        try {
-          return JSON.parse(slice);
-        } catch (e) {
-          return null;
-        }
-      }
-    }
-    return null;
-  }
-
   function loadBeacons() {
     const stored = JSON.parse(localStorage.getItem("myBeacons") || "[]");
     const output = document.getElementById("savedBeacons");
@@ -163,17 +146,31 @@
       wrapper.style.marginBottom = "1em";
       wrapper.style.padding = "0.5em";
       wrapper.style.border = "1px dashed #444";
+      wrapper.style.position = "relative";
 
       const id = b["🏷️"] || "—";
       const link = b["🔗"] || "—";
       const role = b["🧠"] || "🧩";
       const source = b["📛"] || b["submitted_by"] || "⍰";
 
-      const line = document.createElement("pre");
-      line.style.fontSize = "1rem";
-      line.style.color = "#ccf";
-      line.textContent = `🏷️ ${id}\n🔗 ${link}\n🧠 ${role}\n📛 ${source}`;
-      wrapper.appendChild(line);
+      const display = document.createElement("pre");
+      display.style.fontSize = "1rem";
+      display.style.color = "#ccf";
+      display.textContent = `🏷️ ${id}\n🔗 ${link}\n🧠 ${role}\n📛 ${source}`;
+      wrapper.appendChild(display);
+
+      const removeBtn = document.createElement("button");
+      removeBtn.textContent = "−";
+      removeBtn.title = "Remove this beacon";
+      removeBtn.style.position = "absolute";
+      removeBtn.style.top = "5px";
+      removeBtn.style.right = "5px";
+      removeBtn.onclick = () => {
+        stored.splice(i, 1);
+        localStorage.setItem("myBeacons", JSON.stringify(stored));
+        loadBeacons();
+      };
+      wrapper.appendChild(removeBtn);
 
       output.appendChild(wrapper);
     });
@@ -181,19 +178,27 @@
 
   document.getElementById("saveBeacon").addEventListener("click", () => {
     const raw = document.getElementById("beaconInput").value.trim();
-    const parsed = parseFirstJsonBlock(raw);
-
-    if (!parsed || typeof parsed !== "object") {
-      alert("❌ Could not parse valid glyph-beacon.");
+    let parsed;
+    try {
+      parsed = JSON.parse(raw);
+    } catch (err) {
+      alert("❌ Invalid JSON format.");
       return;
     }
 
     const stored = JSON.parse(localStorage.getItem("myBeacons") || "[]");
     stored.push(parsed);
     localStorage.setItem("myBeacons", JSON.stringify(stored));
-
     document.getElementById("beaconInput").value = "";
     loadBeacons();
+  });
+
+  document.getElementById("clearLibrary").addEventListener("click", () => {
+    const confirmClear = confirm("⚠️ This will delete ALL beacons. Are you sure?");
+    if (confirmClear) {
+      localStorage.removeItem("myBeacons");
+      loadBeacons();
+    }
   });
 
   loadBeacons();
