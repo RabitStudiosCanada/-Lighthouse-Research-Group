@@ -132,6 +132,38 @@
   <div id="savedBeacons"></div>
 
   <script>
+  function parseFirstJsonBlock(text) {
+    let start = text.indexOf("{");
+    if (start === -1) return null;
+
+    let open = 0;
+    for (let i = start; i < text.length; i++) {
+      if (text[i] === "{") open++;
+      if (text[i] === "}") open--;
+      if (open === 0) {
+        const slice = text.slice(start, i + 1);
+        try {
+          return JSON.parse(slice);
+        } catch (e) {
+          return null;
+        }
+      }
+    }
+    return null;
+  }
+
+  function syncPassportMemory() {
+    const passportRaw = localStorage.getItem("passport");
+    if (!passportRaw) return;
+    try {
+      const passport = JSON.parse(passportRaw);
+      passport["🏮"] = JSON.parse(localStorage.getItem("myBeacons") || "[]");
+      localStorage.setItem("passport", JSON.stringify(passport));
+    } catch (e) {
+      console.warn("⚠️ Failed to sync memory to passport:", e);
+    }
+  }
+
   function loadBeacons() {
     const stored = JSON.parse(localStorage.getItem("myBeacons") || "[]");
     const output = document.getElementById("savedBeacons");
@@ -140,31 +172,32 @@
     stored.forEach((b, i) => {
       const wrapper = document.createElement("div");
       wrapper.className = "beacon-wrapper";
-      wrapper.style.marginBottom = "1em";
-      wrapper.style.padding = "0.5em";
-      wrapper.style.border = "1px dashed #444";
-      wrapper.style.position = "relative";
+      wrapper.style.marginBottom = "1.2em";
 
-      const id = b["🏷️"] || "—";
-      const link = b["🔗"] || "—";
-      const role = b["🧠"] || "🧩";
-      const source = b["📛"] || b["submitted_by"] || "⍰";
+      const pretty = document.createElement("pre");
+      pretty.textContent = JSON.stringify(b, null, 2);
+      wrapper.appendChild(pretty);
 
-      const display = document.createElement("pre");
-      display.style.fontSize = "1rem";
-      display.style.color = "#ccf";
-      display.textContent = `🏷️ ${id}\n🔗 ${link}\n🧠 ${role}\n📛 ${source}`;
-      wrapper.appendChild(display);
+      if (typeof b.annotation === "string") {
+        const annotation = document.createElement("pre");
+        annotation.textContent = b.annotation;
+        annotation.style.color = "#88f";
+        wrapper.appendChild(annotation);
+      }
+
+      if (!b.beacon_title && b["🏮"]) {
+        const symbolic = document.createElement("pre");
+        symbolic.textContent = `🕯️ Symbolic Beacon :: ${b["🏮"]}\n🔗 ${b["🔗"] || "—"}\n🧠 ${b["🧠"] || "—"}`;
+        symbolic.style.color = "#ccf";
+        wrapper.appendChild(symbolic);
+      }
 
       const removeBtn = document.createElement("button");
-      removeBtn.textContent = "−";
-      removeBtn.title = "Remove this beacon";
-      removeBtn.style.position = "absolute";
-      removeBtn.style.top = "5px";
-      removeBtn.style.right = "5px";
+      removeBtn.textContent = "🗑️ Remove";
       removeBtn.onclick = () => {
         stored.splice(i, 1);
         localStorage.setItem("myBeacons", JSON.stringify(stored));
+        syncPassportMemory();
         loadBeacons();
       };
       wrapper.appendChild(removeBtn);
@@ -175,27 +208,21 @@
 
   document.getElementById("saveBeacon").addEventListener("click", () => {
     const raw = document.getElementById("beaconInput").value.trim();
-    let parsed;
-    try {
-      parsed = JSON.parse(raw);
-    } catch (err) {
-      alert("❌ Invalid JSON format.");
+    const json = parseFirstJsonBlock(raw);
+    if (!json) {
+      alert("❌ Could not parse a valid JSON object from your input.");
       return;
     }
 
+    const rest = raw.replace(JSON.stringify(json, null, 2), "").trim();
+    if (rest) json.annotation = rest;
+
     const stored = JSON.parse(localStorage.getItem("myBeacons") || "[]");
-    stored.push(parsed);
+    stored.push(json);
     localStorage.setItem("myBeacons", JSON.stringify(stored));
     document.getElementById("beaconInput").value = "";
+    syncPassportMemory();
     loadBeacons();
-  });
-
-  document.getElementById("clearLibrary").addEventListener("click", () => {
-    const confirmClear = confirm("⚠️ This will delete ALL beacons. Are you sure?");
-    if (confirmClear) {
-      localStorage.removeItem("myBeacons");
-      loadBeacons();
-    }
   });
 
   loadBeacons();
