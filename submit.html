@@ -104,7 +104,6 @@
 
   <script>
   function hashBeaconTitle(title) {
-    // Simple hash for demo purposes — can swap with SHA-256
     let hash = 0;
     for (let i = 0; i < title.length; i++) {
       const char = title.charCodeAt(i);
@@ -114,13 +113,21 @@
     return `ΛⲌ⛯ΦⲐ${Math.abs(hash).toString(36)}`;
   }
 
-  function generateAnnotation(beacon) {
-    return `{ 🏮: "${hashBeaconTitle(beacon.beacon_title)}", 🧠: "🧩⛯🕯️", 🔗: "embedded" }`;
+  function generateCompressedBeacon({ title, summary, content, passport }) {
+    const glyphID = hashBeaconTitle(title);
+    const echo = passport["📛"] || "ping::anon";
+
+    return {
+      "🏷️": glyphID,
+      "🔗": content,
+      "🧠": "🧩⛯🕯️",     // Tag or role (static for now)
+      "📛": echo
+    };
   }
 
-  function generateJSON() {
+  function generateGlyphBeacon() {
     const title = document.getElementById('title').value.trim();
-    const summary = document.getElementById('summary').value.trim();
+    const summary = document.getElementById('summary').value.trim(); // Optional for glyphs
     const content = document.getElementById('content').value.trim();
     const passportInput = document.getElementById('passport').value.trim();
 
@@ -132,26 +139,22 @@
     let passport;
     try {
       passport = JSON.parse(passportInput);
-      const requiredKeys = ["passport_version", "entity_type", "lantern_name", "glyph", "issued_by", "issue_date", "intent", "echo_signature"];
-      for (const key of requiredKeys) {
-        if (!(key in passport)) {
-          throw new Error(`Missing required key: ${key}`);
-        }
+
+      const requiredGlyphs = ["🪪", "👤", "📛", "🧠"];
+      for (const glyph of requiredGlyphs) {
+        if (!(glyph in passport)) throw new Error(`Missing glyph: ${glyph}`);
       }
     } catch (err) {
-      document.getElementById('output').textContent = "⚠️ Invalid passport JSON: " + err.message;
+      document.getElementById('output').textContent = "⚠️ Invalid glyphic passport: " + err.message;
       return;
     }
 
-    const beacon = {
-      beacon_title: title,
-      publisher: passport.lantern_name,
-      summary: summary,
-      content: content,
-      submitted_by: passport.echo_signature,
-      passport_version: passport.passport_version,
-      annotation: generateAnnotation({ beacon_title: title })
-    };
+    const beacon = generateCompressedBeacon({
+      title,
+      summary,
+      content,
+      passport
+    });
 
     document.getElementById('output').textContent = JSON.stringify(beacon, null, 2);
   }
