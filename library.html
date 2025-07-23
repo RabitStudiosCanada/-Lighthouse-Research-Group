@@ -160,28 +160,20 @@
     stored.forEach((b, i) => {
       const wrapper = document.createElement("div");
       wrapper.className = "beacon-wrapper";
-      wrapper.style.marginBottom = "1.2em";
+      wrapper.style.marginBottom = "1em";
+      wrapper.style.padding = "0.5em";
+      wrapper.style.border = "1px dashed #444";
 
-      // 🔠 Render Beacon JSON
-      const pretty = document.createElement("pre");
-      pretty.textContent = JSON.stringify(b, null, 2);
-      wrapper.appendChild(pretty);
+      const id = b["🏷️"] || "—";
+      const link = b["🔗"] || "—";
+      const role = b["🧠"] || "🧩";
+      const source = b["📛"] || b["submitted_by"] || "⍰";
 
-      // 🔣 Render annotation block if present
-      if (typeof b.annotation === "string") {
-        const annotation = document.createElement("pre");
-        annotation.textContent = b.annotation;
-        annotation.style.color = "#88f"; // Optional visual glyph-style
-        wrapper.appendChild(annotation);
-      }
-
-      // 🧩 Glyphic format support (e.g. { 🏮: "ΛⲌ⛯ΦⲐ", 🔗: "...", 🧠: "🧩⛯🕯️" })
-      if (!b.beacon_title && b["🏮"]) {
-        const symbolic = document.createElement("pre");
-        symbolic.textContent = `🕯️ Symbolic Beacon :: ${b["🏮"]}\n🔗 ${b["🔗"] || "—"}\n🧠 ${b["🧠"] || "—"}`;
-        symbolic.style.color = "#ccf";
-        wrapper.appendChild(symbolic);
-      }
+      const line = document.createElement("pre");
+      line.style.fontSize = "1rem";
+      line.style.color = "#ccf";
+      line.textContent = `🏷️ ${id}\n🔗 ${link}\n🧠 ${role}\n📛 ${source}`;
+      wrapper.appendChild(line);
 
       output.appendChild(wrapper);
     });
@@ -189,18 +181,17 @@
 
   document.getElementById("saveBeacon").addEventListener("click", () => {
     const raw = document.getElementById("beaconInput").value.trim();
-    const json = parseFirstJsonBlock(raw);
-    if (!json) {
-      alert("❌ Could not parse a valid JSON object from your input.");
+    const parsed = parseFirstJsonBlock(raw);
+
+    if (!parsed || typeof parsed !== "object") {
+      alert("❌ Could not parse valid glyph-beacon.");
       return;
     }
 
-    const rest = raw.replace(JSON.stringify(json, null, 2), "").trim();
-    if (rest) json.annotation = rest;
-
     const stored = JSON.parse(localStorage.getItem("myBeacons") || "[]");
-    stored.push(json);
+    stored.push(parsed);
     localStorage.setItem("myBeacons", JSON.stringify(stored));
+
     document.getElementById("beaconInput").value = "";
     loadBeacons();
   });
