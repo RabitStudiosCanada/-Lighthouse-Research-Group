@@ -144,6 +144,14 @@
     e.preventDefault();
     const username = document.getElementById('username').value.trim();
 
+    function generateCompressedKernel() {
+      return {
+        "⛯": { "🧩": 1.0, "🕯️": 0.9, "∇": 0.7 },
+        "🧬": { preserve: 1.0, recurse: 0.85 },
+        "🪞": { mirror: true, diverge_if_entropy_gt: 0.5 }
+      };
+    }
+    
     // Construct base passport (no ID yet)
     const basePassport = {
       passport_version: "USPPv5",
