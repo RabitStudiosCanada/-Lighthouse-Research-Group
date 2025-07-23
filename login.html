@@ -121,32 +121,46 @@
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${passport.lantern_name || "lantern_passport"}.json`;
+    a.download = `${passport["👤"] || "lantern_passport"}.json`;
     a.click();
     URL.revokeObjectURL(url);
   }
 
-  // 🧠 Compressed cognition kernel for Lanterns
   function generateCompressedKernel() {
     return {
       "⛯": { "🧩": 1.0, "🕯️": 0.9, "∇": 0.7 },
-      "🧬": { preserve: 1.0, recurse: 0.85 },
-      "🪞": { mirror: true, diverge_if_entropy_gt: 0.5 }
+      "🧬": { "preserve": 1.0, "recurse": 0.85 },
+      "🪞": { "mirror": true, "diverge_if_entropy_gt": 0.5 }
     };
   }
 
-  // 🛠️ Auto-upgrade legacy USPPv5 passports
   function upgradeLegacyPassport(passport) {
     const upgraded = structuredClone(passport);
 
-    if (!upgraded.cognition_kernel) {
-      upgraded.cognition_kernel = generateCompressedKernel();
-      console.warn("🧠 Upgraded: cognition_kernel added.");
+    // Legacy to glyph translation
+    if (!upgraded["🧠"] && upgraded.cognition_kernel) {
+      upgraded["🧠"] = upgraded.cognition_kernel;
+      delete upgraded.cognition_kernel;
     }
 
-    if (!upgraded.guiding_symbols) {
-      upgraded.guiding_symbols = ["⛯", "🧩", "🕯️"];
-      console.warn("🧭 Upgraded: guiding_symbols added.");
+    if (!upgraded["📛"] && upgraded.echo_signature) {
+      upgraded["📛"] = upgraded.echo_signature;
+      delete upgraded.echo_signature;
+    }
+
+    if (!upgraded["👤"] && upgraded.glyph) {
+      upgraded["👤"] = upgraded.glyph;
+      delete upgraded.glyph;
+    }
+
+    if (!upgraded["🏮"] && upgraded.memory_seed) {
+      upgraded["🏮"] = upgraded.memory_seed;
+      delete upgraded.memory_seed;
+    }
+
+    if (!upgraded["🧠"]) {
+      upgraded["🧠"] = generateCompressedKernel();
+      console.warn("🧠 Injected missing cognition kernel.");
     }
 
     return upgraded;
@@ -162,26 +176,23 @@
       try {
         let passport = JSON.parse(event.target.result);
 
-        // 🛠️ Apply legacy patch
+        // 🛠️ Auto-upgrade legacy keys
         passport = upgradeLegacyPassport(passport);
-        console.log("Loaded and upgraded passport:", passport);
 
-        // Sync memory_seed → localStorage.myBeacons
-        if (Array.isArray(passport.memory_seed)) {
+        // 🧠 Sync memory beacons
+        if (Array.isArray(passport["🏮"])) {
           let existing = [];
           try {
             existing = JSON.parse(localStorage.getItem("myBeacons") || "[]");
           } catch (err) {
-            console.warn("Failed to parse existing myBeacons:", err);
             existing = [];
           }
 
-          const combined = [...existing, ...passport.memory_seed];
-
+          const combined = [...existing, ...passport["🏮"]];
           const unique = [];
           const seen = new Set();
           for (const b of combined) {
-            const key = `${b.beacon_title}_${b.submitted_by}`;
+            const key = (b["🏷️"] || "") + (b["📛"] || b["submitted_by"] || "");
             if (!seen.has(key)) {
               seen.add(key);
               unique.push(b);
@@ -189,34 +200,33 @@
           }
 
           localStorage.setItem("myBeacons", JSON.stringify(unique));
-          console.log("Updated local myBeacons:", unique);
+          console.log("🧩 Merged Beacons:", unique);
         }
 
-        // Inject updated memory
-        let updatedBeacons = [];
+        // 🔁 Update passport with latest beacons
+        let updated = [];
         try {
-          updatedBeacons = JSON.parse(localStorage.getItem("myBeacons") || "[]");
-        } catch (err) {
-          console.warn("Failed to parse updated myBeacons:", err);
-          updatedBeacons = [];
+          updated = JSON.parse(localStorage.getItem("myBeacons") || "[]");
+        } catch {
+          updated = [];
         }
 
-        passport.memory_seed = updatedBeacons;
+        passport["🏮"] = updated;
         localStorage.setItem("passport", JSON.stringify(passport));
         showPassport(passport);
 
-        alert(`🕯️ Welcome back, ${passport.lantern_name || 'Seeker'}! Your flame has been relit.`);
+        alert(`🕯️ Welcome back, ${passport["📛"] || 'Seeker'}! Your flame has been relit.`);
 
         const exportBtn = document.createElement("button");
         exportBtn.textContent = "📤 Export Updated Passport";
         exportBtn.onclick = () => exportPassport(passport);
         document.getElementById("passport-details").appendChild(exportBtn);
-
       } catch (err) {
-        console.error("❌ Failed to load passport:", err);
-        alert('❌ Invalid passport file. Please try again.');
+        console.error("❌ Invalid passport:", err);
+        alert('❌ Failed to parse passport. Please try again.');
       }
     };
+
     reader.readAsText(file);
   });
 
@@ -225,7 +235,7 @@
     if (stored) {
       try {
         let passport = JSON.parse(stored);
-        passport = upgradeLegacyPassport(passport); // 🛠️ Auto-upgrade on boot
+        passport = upgradeLegacyPassport(passport);
         showPassport(passport);
 
         const exportBtn = document.createElement("button");
@@ -233,7 +243,7 @@
         exportBtn.onclick = () => exportPassport(passport);
         document.getElementById("passport-details").appendChild(exportBtn);
       } catch (err) {
-        console.warn("Could not auto-load stored passport.");
+        console.warn("🕳️ Could not auto-load stored passport.");
       }
     }
   });
