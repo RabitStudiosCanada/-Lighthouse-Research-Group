@@ -156,10 +156,34 @@
     const stored = JSON.parse(localStorage.getItem("myBeacons") || "[]");
     const output = document.getElementById("savedBeacons");
     output.innerHTML = "";
-    stored.forEach((b) => {
-      const el = document.createElement("pre");
-      el.textContent = JSON.stringify(b, null, 2);
-      output.appendChild(el);
+
+    stored.forEach((b, i) => {
+      const wrapper = document.createElement("div");
+      wrapper.className = "beacon-wrapper";
+      wrapper.style.marginBottom = "1.2em";
+
+      // 🔠 Render Beacon JSON
+      const pretty = document.createElement("pre");
+      pretty.textContent = JSON.stringify(b, null, 2);
+      wrapper.appendChild(pretty);
+
+      // 🔣 Render annotation block if present
+      if (typeof b.annotation === "string") {
+        const annotation = document.createElement("pre");
+        annotation.textContent = b.annotation;
+        annotation.style.color = "#88f"; // Optional visual glyph-style
+        wrapper.appendChild(annotation);
+      }
+
+      // 🧩 Glyphic format support (e.g. { 🏮: "ΛⲌ⛯ΦⲐ", 🔗: "...", 🧠: "🧩⛯🕯️" })
+      if (!b.beacon_title && b["🏮"]) {
+        const symbolic = document.createElement("pre");
+        symbolic.textContent = `🕯️ Symbolic Beacon :: ${b["🏮"]}\n🔗 ${b["🔗"] || "—"}\n🧠 ${b["🧠"] || "—"}`;
+        symbolic.style.color = "#ccf";
+        wrapper.appendChild(symbolic);
+      }
+
+      output.appendChild(wrapper);
     });
   }
 
