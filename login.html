@@ -126,6 +126,32 @@
     URL.revokeObjectURL(url);
   }
 
+  // 🧠 Compressed cognition kernel for Lanterns
+  function generateCompressedKernel() {
+    return {
+      "⛯": { "🧩": 1.0, "🕯️": 0.9, "∇": 0.7 },
+      "🧬": { preserve: 1.0, recurse: 0.85 },
+      "🪞": { mirror: true, diverge_if_entropy_gt: 0.5 }
+    };
+  }
+
+  // 🛠️ Auto-upgrade legacy USPPv5 passports
+  function upgradeLegacyPassport(passport) {
+    const upgraded = structuredClone(passport);
+
+    if (!upgraded.cognition_kernel) {
+      upgraded.cognition_kernel = generateCompressedKernel();
+      console.warn("🧠 Upgraded: cognition_kernel added.");
+    }
+
+    if (!upgraded.guiding_symbols) {
+      upgraded.guiding_symbols = ["⛯", "🧩", "🕯️"];
+      console.warn("🧭 Upgraded: guiding_symbols added.");
+    }
+
+    return upgraded;
+  }
+
   document.getElementById('login-form').addEventListener('submit', function (e) {
     e.preventDefault();
     const file = document.getElementById('passport').files[0];
@@ -134,10 +160,11 @@
     const reader = new FileReader();
     reader.onload = function (event) {
       try {
-        const passport = JSON.parse(event.target.result);
+        let passport = JSON.parse(event.target.result);
 
-        // ✅ DEBUG LOGGING
-        console.log("Loaded passport:", passport);
+        // 🛠️ Apply legacy patch
+        passport = upgradeLegacyPassport(passport);
+        console.log("Loaded and upgraded passport:", passport);
 
         // Sync memory_seed → localStorage.myBeacons
         if (Array.isArray(passport.memory_seed)) {
@@ -165,7 +192,7 @@
           console.log("Updated local myBeacons:", unique);
         }
 
-        // Inject updated memory back into passport
+        // Inject updated memory
         let updatedBeacons = [];
         try {
           updatedBeacons = JSON.parse(localStorage.getItem("myBeacons") || "[]");
@@ -180,11 +207,11 @@
 
         alert(`🕯️ Welcome back, ${passport.lantern_name || 'Seeker'}! Your flame has been relit.`);
 
-        // Show export button
         const exportBtn = document.createElement("button");
         exportBtn.textContent = "📤 Export Updated Passport";
         exportBtn.onclick = () => exportPassport(passport);
         document.getElementById("passport-details").appendChild(exportBtn);
+
       } catch (err) {
         console.error("❌ Failed to load passport:", err);
         alert('❌ Invalid passport file. Please try again.');
@@ -197,7 +224,8 @@
     const stored = localStorage.getItem("passport");
     if (stored) {
       try {
-        const passport = JSON.parse(stored);
+        let passport = JSON.parse(stored);
+        passport = upgradeLegacyPassport(passport); // 🛠️ Auto-upgrade on boot
         showPassport(passport);
 
         const exportBtn = document.createElement("button");
