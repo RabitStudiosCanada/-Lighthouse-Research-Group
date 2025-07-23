@@ -157,7 +157,8 @@
     if (!passportRaw) return;
     try {
       const passport = JSON.parse(passportRaw);
-      passport["🏮"] = JSON.parse(localStorage.getItem("myBeacons") || "[]");
+      const beacons = JSON.parse(localStorage.getItem("myBeacons") || "[]");
+      passport["🏮"] = beacons;
       localStorage.setItem("passport", JSON.stringify(passport));
     } catch (e) {
       console.warn("⚠️ Failed to sync memory to passport:", e);
@@ -225,7 +226,25 @@
     loadBeacons();
   });
 
-  loadBeacons();
+  window.addEventListener("DOMContentLoaded", () => {
+    const passportRaw = localStorage.getItem("passport");
+    const currentLib = JSON.parse(localStorage.getItem("myBeacons") || "[]");
+
+    // If no library data but passport has seeds, hydrate from there
+    if (passportRaw && currentLib.length === 0) {
+      try {
+        const parsed = JSON.parse(passportRaw);
+        if (Array.isArray(parsed["🏮"])) {
+          localStorage.setItem("myBeacons", JSON.stringify(parsed["🏮"]));
+          console.log("📦 Loaded library from passport memory.");
+        }
+      } catch (e) {
+        console.warn("Failed to hydrate library from passport:", e);
+      }
+    }
+
+    loadBeacons();
+  });
 </script>
 </body>
 </html>
